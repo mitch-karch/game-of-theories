@@ -13,6 +13,7 @@ CORS(app)
 
 
 BOOKS = []
+PLAYERS = []
 
 # Sanity Checks
 @app.route('/ping', methods=['GET'])
@@ -26,11 +27,18 @@ def all_books():
         post_data = request.get_json()
         add_book(post_data.get('title'),
                  post_data.get('author'),
-                 post_data.get('read'))
+                 post_data.get('theory'))
         response_object['message'] = 'Book added!'
     else:
         response_object['books'] = BOOKS
     return jsonify(response_object)
+
+@app.route('/players', methods=['GET'])
+def all_players():
+    response_object = {'status': 'success'}
+    response_object['players'] = PLAYERS
+    return jsonify(response_object)
+
 
 @app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
 def single_book(book_id):
@@ -62,6 +70,19 @@ def add_book(bookTitle, bookAuthor, bookRead, uniqueID = uuid.uuid4().hex):
     })
     update_local()
 
+@app.route('/players/<player_id>', methods=['PUT'])
+def single_player(player_id):
+    response_object = {'status': 'success'}
+    post_data = request.get_json()
+    if(remove_book(book_id)):
+        add_book(post_data.get('name'),
+                 post_data.get('tokensTotal'),
+                 post_data.get('bets'),
+                 book_id)
+        response_object['message'] = 'Player modified!'
+    else:
+        response_object['status'] = 'Fail'
+    return jsonify(response_object)
 
 def remove_book(book_id):
     for book in BOOKS:
@@ -71,39 +92,45 @@ def remove_book(book_id):
             return True
     return False
 
+def remove_player(player_id):
+    for player in PLAYERS:
+        if player['id'] == player_id:
+            PLAYERS.remove(player)
+            update_local()
+            return True
+    return False
+
+def add_player(authorName, tokensTotal, bets, uniqueID = uuid.uuid4().hex):
+    global PLAYERS
+    PLAYERS.append({
+        'id': uniqueID,
+        'name': authorName,
+        'tokensTotal': tokensTotal,
+        'bets': bets
+    })
+
 def load_books():
     global BOOKS
     with open('books.json') as infile:
         BOOKS = json.load(infile)
+
+def load_players():
+    global PLAYERS
+    with open('players.json') as infile:
+        PLAYERS = json.load(infile)
 
 def update_local():
     global BOOKS
     with open('books.json', 'w') as outfile:
         json.dump(BOOKS,outfile)
 
-
-# BOOKS = [
-#     {
-#         'id': uuid.uuid4().hex,
-#         'title': 'On the Road',
-#         'author': 'Jack Kerouac',
-#         'read': True
-#     },
-#     {
-#         'id': uuid.uuid4().hex,
-#         'title': 'Harry Potter and the Philosopher\'s Stone',
-#         'author': 'J. K. Rowling',
-#         'read': False
-#     },
-#     {
-#         'id': uuid.uuid4().hex,
-#         'title': 'Green Eggs and Ham',
-#         'author': 'Dr. Seuss',
-#         'read': True
-#     }
-# ]
+def update_players():
+    global PLAYERS
+    with open('players.json', 'w') as outfile:
+        json.dump(PLAYERS,outfile)
 
 # Core
 if __name__ == '__main__':
     load_books()
+    load_players()
     app.run()

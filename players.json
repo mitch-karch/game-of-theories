@@ -1,0 +1,35 @@
+[
+    {
+        "id": "1",
+        "tokensTotal": "20",
+        "name": "saku",
+        "bets": [
+            {
+                "theoryId":"0",
+                "betAmount":"0"
+            }
+        ]
+    },
+    {
+        "id": "2",
+        "tokensTotal": "20",
+        "name": "noggin",
+        "bets": [
+            {
+                "theoryId":"0",
+                "betAmount":"0"
+            }
+        ]
+    },   
+    {
+        "id": "3",
+        "tokensTotal": "20",
+        "name": "mango",
+        "bets": [
+            {
+                "theoryId":"0",
+                "betAmount":"0"
+            }
+        ]
+    }
+]
