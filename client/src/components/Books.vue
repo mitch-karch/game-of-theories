@@ -23,8 +23,8 @@
             <tr v-for="(book, index) in books" :key="index">
               <td>{{ book.title }}</td>
               <td>{{ book.author }}</td>
-              <td>{{ book.positive }}</td>
-              <td>{{ book.negative }}</td>
+              <td>{{ "👍".repeat(book.positive) }}</td>
+              <td>{{ "👎".repeat(book.negative) }}</td>
               <td>
                 <button type="button"
                         class="btn btn-warning btn-sm"
@@ -137,6 +137,19 @@
 import axios from 'axios';
 import Alert from './Alert';
 
+function genPosNeg(singleBook) {
+  let countPositives = 0;
+  let countNegatives = 0;
+  singleBook.bets.forEach((element) => {
+    if (element.betAmount > 0) {
+      countPositives += element.betAmount;
+    } else {
+      countNegatives += Math.abs(element.betAmount);
+    }
+  });
+  return [countPositives, countNegatives];
+}
+
 export default {
   data() {
     return {
@@ -166,6 +179,11 @@ export default {
       const path = 'http://localhost:5000/books';
       axios.get(path)
         .then((res) => {
+          res.data.books.forEach((element) => {
+            const temp = genPosNeg(element);
+            element.positive = temp[0];
+            element.negative = temp[1];
+          });
           this.books = res.data.books;
         })
         .catch((error) => {
@@ -286,4 +304,6 @@ export default {
     this.getPlayers();
   },
 };
+
+
 </script>
