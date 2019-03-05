@@ -78,6 +78,7 @@
                       label="Votes:"
                       label-for="form-votes-input">
             <div v-for="voter in players" :key="voter.name">
+                {{voter.name}} assigned tokens: {{voter.tempToken}}
                 <b-form-input :name="voter.name"
                               :key="voter.name"
                               id="form-votes-input"
@@ -88,7 +89,6 @@
                               step=1
                               v-model.number="voter.tempToken">
                 </b-form-input>
-                {{voter.name}} assigned tokens: {{voter.tempToken}}
             </div>
         </b-form-group>
 
@@ -121,11 +121,34 @@
                           placeholder="Enter author">
             </b-form-input>
           </b-form-group>
-        <b-form-group id="form-read-edit-group">
-          <b-form-checkbox-group v-model="editForm.read" id="form-checks">
-            <b-form-checkbox value="true">Read?</b-form-checkbox>
-          </b-form-checkbox-group>
+        <b-form-group id="form-edit-theory-group"
+                      label="Theory:"
+                      label-for="form-edit-theory-input">
+            <b-form-textarea id="form-edit-theory-input"
+                             type="text"
+                             v-model="editForm.theory"
+                             rows="3"
+                             max-rows="6">
+            </b-form-textarea>
         </b-form-group>
+        <b-form-group id="form-edit-votes-group"
+                      label="Votes:"
+                      label-for="form-edit-votes-input">
+            <div v-for="voter in editForm.bets" :key="voter.player">
+                {{voter.player}} assigned tokens: {{voter.betAmount}}
+                <b-form-input :name="voter.name"
+                              :key="voter.name"
+                              id="form-votes-input"
+                              type="range"
+                              placeholder=0
+                              min=-5
+                              max=5
+                              step=1
+                              v-model.number="voter.betAmount">
+                </b-form-input>
+            </div>
+        </b-form-group>
+
         <b-button type="submit" variant="primary">Update</b-button>
         <b-button type="reset" variant="danger">Cancel</b-button>
       </b-form>
@@ -165,7 +188,8 @@ export default {
         id: '',
         title: '',
         author: '',
-        read: [],
+        theory: '',
+        bets: [],
       },
       message: '',
       showMessage: false,
@@ -179,6 +203,7 @@ export default {
       const path = 'http://localhost:5000/books';
       axios.get(path)
         .then((res) => {
+          /* eslint no-param-reassign: "error" */
           res.data.books.forEach((element) => {
             const temp = genPosNeg(element);
             element.positive = temp[0];
@@ -254,7 +279,8 @@ export default {
       this.editForm.id = '';
       this.editForm.title = '';
       this.editForm.author = '';
-      this.editForm.read = [];
+      this.editForm.theory = '';
+      this.editForm.bets = [];
     },
     onSubmit(evt) {
       evt.preventDefault();
@@ -271,7 +297,6 @@ export default {
       });
       payload.bets = this.tempBetList;
       this.tempBetList = [];
-      // iterate through the players object, find the temptoken, append to payload
       this.addBook(payload);
       this.initForm();
     },
@@ -281,6 +306,8 @@ export default {
       const payload = {
         title: this.editForm.title,
         author: this.editForm.author,
+        theory: this.editForm.theory,
+        bets: this.editForm.bets,
       };
       this.updateBook(payload, this.editForm.id);
     },

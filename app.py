@@ -49,7 +49,7 @@ def single_book(book_id):
         if(remove_book(book_id)):
             add_book(post_data.get('title'),
                      post_data.get('author'),
-                     post_data.get('read'),
+                     post_data.get('theory'),
                      post_data.get('bets'),
                      book_id)
             response_object['message'] = 'Book updated!'
