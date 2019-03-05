@@ -78,7 +78,9 @@
                       label="Votes:"
                       label-for="form-votes-input">
             <div v-for="voter in players" :key="voter.name">
-                {{voter.name}} assigned tokens: {{voter.tempToken}}
+                {{voter.name}} assigned tokens: {{ voter.tempToken }} {{
+                voter.tempToken > 0
+                ? "👍".repeat(voter.tempToken) : "👎".repeat(Math.abs(voter.tempToken)) }}
                 <b-form-input :name="voter.name"
                               :key="voter.name"
                               id="form-votes-input"
@@ -135,7 +137,9 @@
                       label="Votes:"
                       label-for="form-edit-votes-input">
             <div v-for="voter in editForm.bets" :key="voter.player">
-                {{voter.player}} assigned tokens: {{voter.betAmount}}
+                {{voter.player}} assigned tokens: {{ voter.betAmount }} {{
+                voter.betAmount > 0
+                ? "👍".repeat(voter.betAmount) : "👎".repeat(Math.abs(voter.betAmount)) }}
                 <b-form-input :name="voter.name"
                               :key="voter.name"
                               id="form-votes-input"
