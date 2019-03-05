@@ -27,7 +27,8 @@ def all_books():
         post_data = request.get_json()
         add_book(post_data.get('title'),
                  post_data.get('author'),
-                 post_data.get('theory'))
+                 post_data.get('theory'),
+                 post_data.get('bets'))
         response_object['message'] = 'Book added!'
     else:
         response_object['books'] = BOOKS
@@ -49,6 +50,7 @@ def single_book(book_id):
             add_book(post_data.get('title'),
                      post_data.get('author'),
                      post_data.get('read'),
+                     post_data.get('bets'),
                      book_id)
             response_object['message'] = 'Book updated!'
         else:
@@ -60,13 +62,14 @@ def single_book(book_id):
             response_object['status'] = 'Fail'
     return jsonify(response_object)
 
-def add_book(bookTitle, bookAuthor, bookRead, uniqueID = uuid.uuid4().hex):
+def add_book(bookTitle, bookAuthor, theoryContent, bookBets, uniqueID = uuid.uuid4().hex):
     global BOOKS
     BOOKS.append({
         'id': uniqueID,
         'title': bookTitle,
         'author': bookAuthor,
-        'read': bookRead
+        'theory': theoryContent,
+        'bets': bookBets
     })
     update_local()
 

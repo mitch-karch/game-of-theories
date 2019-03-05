@@ -86,9 +86,9 @@
                               min=-5
                               max=5
                               step=1
-                              v-model="voter.token">
+                              v-model.number="voter.tempToken">
                 </b-form-input>
-                {{voter.name}} assigned tokens: {{voter.token}}
+                {{voter.name}} assigned tokens: {{voter.tempToken}}
             </div>
         </b-form-group>
 
@@ -142,6 +142,7 @@ export default {
     return {
       books: [],
       players: [],
+      tempBetList: [],
       addBookForm: {
         title: '',
         author: '',
@@ -183,7 +184,6 @@ export default {
           console.error(error);
         });
     },
-
     addBook(payload) {
       const path = 'http://localhost:5000/books';
       axios.post(path, payload)
@@ -246,6 +246,14 @@ export default {
         author: this.addBookForm.author,
         theory: this.addBookForm.theory,
       };
+      this.players.forEach((element) => {
+        const player = element.name;
+        const betAmount = element.tempToken;
+        this.tempBetList.push({ player, betAmount });
+      });
+      payload.bets = this.tempBetList;
+      this.tempBetList = [];
+      // iterate through the players object, find the temptoken, append to payload
       this.addBook(payload);
       this.initForm();
     },
