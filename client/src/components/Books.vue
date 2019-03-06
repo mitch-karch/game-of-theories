@@ -57,12 +57,11 @@
         <b-form-group id="form-author-group"
                       label="Author:"
                       label-for="form-author-input">
-            <b-form-input id="form-author-input"
-                          type="text"
+            <b-form-select id="form-author-input"
                           v-model="addTheoryForm.author"
                           required
-                          placeholder="Enter author">
-            </b-form-input>
+                          :options=player_list>
+            </b-form-select>
           </b-form-group>
         <b-form-group id="form-proposedTheory-group"
                       label="proposedTheory:"
@@ -116,12 +115,11 @@
         <b-form-group id="form-author-edit-group"
                       label="Author:"
                       label-for="form-author-edit-input">
-            <b-form-input id="form-author-edit-input"
-                          type="text"
+            <b-form-select id="form-author-edit-input"
                           v-model="editForm.author"
                           required
-                          placeholder="Enter author">
-            </b-form-input>
+                          :options=player_list>
+            </b-form-select>
           </b-form-group>
         <b-form-group id="form-edit-proposedTheory-group"
                       label="proposedTheory:"
@@ -164,6 +162,7 @@
 import axios from 'axios';
 import Alert from './Alert';
 
+/* Helper Functions */
 function genPosNeg(singleTheory) {
   let countPositives = 0;
   let countNegatives = 0;
@@ -177,11 +176,21 @@ function genPosNeg(singleTheory) {
   return [countPositives, countNegatives];
 }
 
+function genAuthorList(playerObject) {
+  const tempAuthorList = [];
+  playerObject.forEach((element) => {
+    tempAuthorList.push(element.name);
+  });
+  return tempAuthorList;
+}
+
+/* Vue Architecture */
 export default {
   data() {
     return {
       Theories: [],
       players: [],
+      player_list: [],
       tempBetList: [],
       addTheoryForm: {
         title: '',
@@ -225,6 +234,7 @@ export default {
       axios.get(path)
         .then((res) => {
           this.players = res.data.players;
+          this.player_list = genAuthorList(this.players);
         })
         .catch((error) => {
           // eslint-disable-next-line

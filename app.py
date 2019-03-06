@@ -27,7 +27,7 @@ def all_Theories():
         post_data = request.get_json()
         add_Theory(post_data.get('title'),
                  post_data.get('author'),
-                 post_data.get('theory'),
+                 post_data.get('proposedTheory'),
                  post_data.get('bets'))
         response_object['message'] = 'Theory added!'
     else:
@@ -49,7 +49,7 @@ def single_Theory(Theory_id):
         if(remove_Theory(Theory_id)):
             add_Theory(post_data.get('title'),
                      post_data.get('author'),
-                     post_data.get('theory'),
+                     post_data.get('proposedTheory'),
                      post_data.get('bets'),
                      Theory_id)
             response_object['message'] = 'Theory updated!'
@@ -68,7 +68,7 @@ def add_Theory(TheoryTitle, TheoryAuthor, theoryContent, TheoryBets, uniqueID = 
         'id': uniqueID,
         'title': TheoryTitle,
         'author': TheoryAuthor,
-        'theory': theoryContent,
+        'proposedTheory': theoryContent,
         'bets': TheoryBets
     })
     update_local()
