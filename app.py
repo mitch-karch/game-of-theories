@@ -12,7 +12,7 @@ app.config.from_object(__name__)
 CORS(app)
 
 
-BOOKS = []
+THEORIES = []
 PLAYERS = []
 
 # Sanity Checks
@@ -20,18 +20,18 @@ PLAYERS = []
 def pingPong():
     return jsonify('pong')
 
-@app.route('/books', methods=['GET', 'POST'])
-def all_books():
+@app.route('/Theories', methods=['GET', 'POST'])
+def all_Theories():
     response_object = {'status': 'success'}
     if request.method == 'POST':
         post_data = request.get_json()
-        add_book(post_data.get('title'),
+        add_Theory(post_data.get('title'),
                  post_data.get('author'),
                  post_data.get('theory'),
                  post_data.get('bets'))
-        response_object['message'] = 'Book added!'
+        response_object['message'] = 'Theory added!'
     else:
-        response_object['books'] = BOOKS
+        response_object['Theories'] = THEORIES
     return jsonify(response_object)
 
 @app.route('/players', methods=['GET'])
@@ -41,35 +41,35 @@ def all_players():
     return jsonify(response_object)
 
 
-@app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
-def single_book(book_id):
+@app.route('/Theories/<Theory_id>', methods=['PUT', 'DELETE'])
+def single_Theory(Theory_id):
     response_object = {'status': 'success'}
     if request.method == 'PUT':
         post_data = request.get_json()
-        if(remove_book(book_id)):
-            add_book(post_data.get('title'),
+        if(remove_Theory(Theory_id)):
+            add_Theory(post_data.get('title'),
                      post_data.get('author'),
                      post_data.get('theory'),
                      post_data.get('bets'),
-                     book_id)
-            response_object['message'] = 'Book updated!'
+                     Theory_id)
+            response_object['message'] = 'Theory updated!'
         else:
             response_object['status'] = 'Fail'
     if request.method == 'DELETE':
-        if(remove_book(book_id)):
-            response_object['message'] = 'Book updated!'
+        if(remove_Theory(Theory_id)):
+            response_object['message'] = 'Theory updated!'
         else:
             response_object['status'] = 'Fail'
     return jsonify(response_object)
 
-def add_book(bookTitle, bookAuthor, theoryContent, bookBets, uniqueID = uuid.uuid4().hex):
-    global BOOKS
-    BOOKS.append({
+def add_Theory(TheoryTitle, TheoryAuthor, theoryContent, TheoryBets, uniqueID = uuid.uuid4().hex):
+    global THEORIES
+    THEORIES.append({
         'id': uniqueID,
-        'title': bookTitle,
-        'author': bookAuthor,
+        'title': TheoryTitle,
+        'author': TheoryAuthor,
         'theory': theoryContent,
-        'bets': bookBets
+        'bets': TheoryBets
     })
     update_local()
 
@@ -77,20 +77,20 @@ def add_book(bookTitle, bookAuthor, theoryContent, bookBets, uniqueID = uuid.uui
 def single_player(player_id):
     response_object = {'status': 'success'}
     post_data = request.get_json()
-    if(remove_book(book_id)):
-        add_book(post_data.get('name'),
+    if(remove_Theory(Theory_id)):
+        add_Theory(post_data.get('name'),
                  post_data.get('tokensTotal'),
                  post_data.get('bets'),
-                 book_id)
+                 Theory_id)
         response_object['message'] = 'Player modified!'
     else:
         response_object['status'] = 'Fail'
     return jsonify(response_object)
 
-def remove_book(book_id):
-    for book in BOOKS:
-        if book['id'] == book_id:
-            BOOKS.remove(book)
+def remove_Theory(Theory_id):
+    for Theory in THEORIES:
+        if Theory['id'] == Theory_id:
+            THEORIES.remove(Theory)
             update_local()
             return True
     return False
@@ -112,10 +112,10 @@ def add_player(authorName, tokensTotal, bets, uniqueID = uuid.uuid4().hex):
         'bets': bets
     })
 
-def load_books():
-    global BOOKS
-    with open('books.json') as infile:
-        BOOKS = json.load(infile)
+def load_Theories():
+    global THEORIES
+    with open('Theories.json') as infile:
+        THEORIES = json.load(infile)
 
 def load_players():
     global PLAYERS
@@ -123,9 +123,9 @@ def load_players():
         PLAYERS = json.load(infile)
 
 def update_local():
-    global BOOKS
-    with open('books.json', 'w') as outfile:
-        json.dump(BOOKS,outfile)
+    global THEORIES
+    with open('Theories.json', 'w') as outfile:
+        json.dump(THEORIES,outfile)
 
 def update_players():
     global PLAYERS
@@ -134,6 +134,6 @@ def update_players():
 
 # Core
 if __name__ == '__main__':
-    load_books()
+    load_Theories()
     load_players()
     app.run()

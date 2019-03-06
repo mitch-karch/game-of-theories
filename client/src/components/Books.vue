@@ -7,7 +7,7 @@
         <alert :message=message v-if="showMessage"></alert>
         <button type="button"
                 class="btn btn-success btn-sm"
-                v-b-modal.book-modal>Add Theory</button>
+                v-b-modal.Theory-modal>Add Theory</button>
         <br><br>
         <table class="table table-hover">
           <thead>
@@ -20,28 +20,28 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(book, index) in books" :key="index">
-              <td>{{ book.title }}</td>
-              <td>{{ book.author }}</td>
-              <td>{{ "👍".repeat(book.positive) }}</td>
-              <td>{{ "👎".repeat(book.negative) }}</td>
+            <tr v-for="(Theory, index) in Theories" :key="index">
+              <td>{{ Theory.title }}</td>
+              <td>{{ Theory.author }}</td>
+              <td>{{ "🔥".repeat(Theory.positive) }}</td>
+              <td>{{ "💀".repeat(Theory.negative) }}</td>
               <td>
                 <button type="button"
                         class="btn btn-warning btn-sm"
-                        v-b-modal.book-update-modal
-                        @click="editBook(book)">Update</button>
+                        v-b-modal.Theory-update-modal
+                        @click="editTheory(Theory)">Update</button>
                 <button type="button"
                         class="btn btn-danger btn-sm"
-                        @click="onDeleteBook(book)">Delete</button>
+                        @click="onDeleteTheory(Theory)">Delete</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <b-modal ref="addBookModal"
-             id="book-modal"
-             title="Add a new book"
+    <b-modal ref="addTheoryModal"
+             id="Theory-modal"
+             title="Add a new Theory"
              hide-footer>
       <b-form @submit="onSubmit" @reset="onReset" class="w-100">
       <b-form-group id="form-title-group"
@@ -49,7 +49,7 @@
                     label-for="form-title-input">
           <b-form-input id="form-title-input"
                         type="text"
-                        v-model="addBookForm.title"
+                        v-model="addTheoryForm.title"
                         required
                         placeholder="Enter title">
           </b-form-input>
@@ -59,17 +59,17 @@
                       label-for="form-author-input">
             <b-form-input id="form-author-input"
                           type="text"
-                          v-model="addBookForm.author"
+                          v-model="addTheoryForm.author"
                           required
                           placeholder="Enter author">
             </b-form-input>
           </b-form-group>
-        <b-form-group id="form-theory-group"
-                      label="Theory:"
-                      label-for="form-theory-input">
+        <b-form-group id="form-proposedTheory-group"
+                      label="proposedTheory:"
+                      label-for="form-proposedTheory-input">
             <b-form-textarea id="form-theory-input"
                              type="text"
-                             v-model="addBookForm.theory"
+                             v-model="addTheoryForm.proposedTheory"
                              rows="3"
                              max-rows="6">
             </b-form-textarea>
@@ -80,7 +80,7 @@
             <div v-for="voter in players" :key="voter.name">
                 {{voter.name}} assigned tokens: {{ voter.tempToken }} {{
                 voter.tempToken > 0
-                ? "👍".repeat(voter.tempToken) : "👎".repeat(Math.abs(voter.tempToken)) }}
+                ? "🔥".repeat(voter.tempToken) : "💀".repeat(Math.abs(voter.tempToken)) }}
                 <b-form-input :name="voter.name"
                               :key="voter.name"
                               id="form-votes-input"
@@ -98,8 +98,8 @@
         <b-button type="reset" variant="danger">Reset</b-button>
       </b-form>
     </b-modal>
-    <b-modal ref="editBookModal"
-             id="book-update-modal"
+    <b-modal ref="editTheoryModal"
+             id="Theory-update-modal"
              title="Update"
              hide-footer>
       <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
@@ -123,12 +123,12 @@
                           placeholder="Enter author">
             </b-form-input>
           </b-form-group>
-        <b-form-group id="form-edit-theory-group"
-                      label="Theory:"
-                      label-for="form-edit-theory-input">
-            <b-form-textarea id="form-edit-theory-input"
+        <b-form-group id="form-edit-proposedTheory-group"
+                      label="proposedTheory:"
+                      label-for="form-edit-proposedTheory-input">
+            <b-form-textarea id="form-edit-proposedTheory-input"
                              type="text"
-                             v-model="editForm.theory"
+                             v-model="editForm.proposedTheory"
                              rows="3"
                              max-rows="6">
             </b-form-textarea>
@@ -139,7 +139,7 @@
             <div v-for="voter in editForm.bets" :key="voter.player">
                 {{voter.player}} assigned tokens: {{ voter.betAmount }} {{
                 voter.betAmount > 0
-                ? "👍".repeat(voter.betAmount) : "👎".repeat(Math.abs(voter.betAmount)) }}
+                ? "🔥".repeat(voter.betAmount) : "💀".repeat(Math.abs(voter.betAmount)) }}
                 <b-form-input :name="voter.name"
                               :key="voter.name"
                               id="form-votes-input"
@@ -164,10 +164,10 @@
 import axios from 'axios';
 import Alert from './Alert';
 
-function genPosNeg(singleBook) {
+function genPosNeg(singleTheory) {
   let countPositives = 0;
   let countNegatives = 0;
-  singleBook.bets.forEach((element) => {
+  singleTheory.bets.forEach((element) => {
     if (element.betAmount > 0) {
       countPositives += element.betAmount;
     } else {
@@ -180,19 +180,19 @@ function genPosNeg(singleBook) {
 export default {
   data() {
     return {
-      books: [],
+      Theories: [],
       players: [],
       tempBetList: [],
-      addBookForm: {
+      addTheoryForm: {
         title: '',
         author: '',
-        theory: '',
+        proposedTheory: '',
       },
       editForm: {
         id: '',
         title: '',
         author: '',
-        theory: '',
+        proposedTheory: '',
         bets: [],
       },
       message: '',
@@ -203,17 +203,17 @@ export default {
     alert: Alert,
   },
   methods: {
-    getBooks() {
-      const path = 'http://localhost:5000/books';
+    getTheories() {
+      const path = 'http://localhost:5000/Theories';
       axios.get(path)
         .then((res) => {
           /* eslint no-param-reassign: "error" */
-          res.data.books.forEach((element) => {
+          res.data.Theories.forEach((element) => {
             const temp = genPosNeg(element);
             element.positive = temp[0];
             element.negative = temp[1];
           });
-          this.books = res.data.books;
+          this.Theories = res.data.Theories;
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -231,68 +231,68 @@ export default {
           console.error(error);
         });
     },
-    addBook(payload) {
-      const path = 'http://localhost:5000/books';
+    addTheory(payload) {
+      const path = 'http://localhost:5000/Theories';
       axios.post(path, payload)
         .then(() => {
-          this.getBooks();
-          this.message = 'Book added!';
+          this.getTheories();
+          this.message = 'Theory added!';
           this.showMessage = true;
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.log(error);
-          this.getBooks();
+          this.getTheories();
         });
     },
-    updateBook(payload, bookID) {
-      const path = `http://localhost:5000/books/${bookID}`;
+    updateTheory(payload, TheoryID) {
+      const path = `http://localhost:5000/Theories/${TheoryID}`;
       axios.put(path, payload)
         .then(() => {
-          this.getBooks();
-          this.message = 'Book updated!';
+          this.getTheories();
+          this.message = 'Theory updated!';
           this.showMessage = true;
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.log(error);
-          this.getBooks();
+          this.getTheories();
         });
     },
-    removeBook(bookID) {
-      const path = `http://localhost:5000/books/${bookID}`;
+    removeTheory(TheoryID) {
+      const path = `http://localhost:5000/Theories/${TheoryID}`;
       axios.delete(path)
         .then(() => {
-          this.getBooks();
-          this.message = 'Book removed!';
+          this.getTheories();
+          this.message = 'Theory removed!';
           this.showMessage = true;
         })
         .catch((error) => {
         // eslint-disable-next-line
           console.error(error);
-          this.getBooks();
+          this.getTheories();
         });
     },
-    editBook(book) {
-      this.editForm = book;
+    editTheory(Theory) {
+      this.editForm = Theory;
     },
     initForm() {
-      this.addBookForm.title = '';
-      this.addBookForm.author = '';
-      this.addBookForm.theory = '';
+      this.addTheoryForm.title = '';
+      this.addTheoryForm.author = '';
+      this.addTheoryForm.proposedTheory = '';
       this.editForm.id = '';
       this.editForm.title = '';
       this.editForm.author = '';
-      this.editForm.theory = '';
+      this.editForm.proposedTheory = '';
       this.editForm.bets = [];
     },
     onSubmit(evt) {
       evt.preventDefault();
-      this.$refs.addBookModal.hide();
+      this.$refs.addTheoryModal.hide();
       const payload = {
-        title: this.addBookForm.title,
-        author: this.addBookForm.author,
-        theory: this.addBookForm.theory,
+        title: this.addTheoryForm.title,
+        author: this.addTheoryForm.author,
+        proposedTheory: this.addTheoryForm.proposedTheory,
       };
       this.players.forEach((element) => {
         const player = element.name;
@@ -301,37 +301,37 @@ export default {
       });
       payload.bets = this.tempBetList;
       this.tempBetList = [];
-      this.addBook(payload);
+      this.addTheory(payload);
       this.initForm();
     },
     onSubmitUpdate(evt) {
       evt.preventDefault();
-      this.$refs.editBookModal.hide();
+      this.$refs.editTheoryModal.hide();
       const payload = {
         title: this.editForm.title,
         author: this.editForm.author,
-        theory: this.editForm.theory,
+        proposedTheory: this.editForm.proposedTheory,
         bets: this.editForm.bets,
       };
-      this.updateBook(payload, this.editForm.id);
+      this.updateTheory(payload, this.editForm.id);
     },
     onReset(evt) {
       evt.preventDefault();
-      this.$refs.addBookModal.hide();
+      this.$refs.addTheoryModal.hide();
       this.initForm();
     },
     onResetUpdate(evt) {
       evt.preventDefault();
-      this.$refs.editBookModal.hide();
+      this.$refs.editTheoryModal.hide();
       this.initForm();
-      this.getBooks(); // why?
+      this.getTheories(); // why?
     },
-    onDeleteBook(book) {
-      this.removeBook(book.id);
+    onDeleteTheory(Theory) {
+      this.removeTheory(Theory.id);
     },
   },
   created() {
-    this.getBooks();
+    this.getTheories();
     this.getPlayers();
   },
 };
