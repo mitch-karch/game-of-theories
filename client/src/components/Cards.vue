@@ -1,9 +1,11 @@
 <template>
   <div class="container">
-        <button type="button"
-                class="btn btn-success btn-sm"
-                v-b-modal.Theory-modal>Add Theory</button>
+    <h1>Game of Theories</h1>
+    <h3>Card View</h3>
+    <hr>
     <addTheory @theorySubmitted="getTheories"></addTheory>
+    <br><br>
+    <editTheory @theoryUpdated="getTheories" v-bind:passedTheory="this.theory"></editTheory>
     <div class="row">
       <b-card-group deck>
         <b-card v-for="(Theory, index) in storedTheories" :key="index"
@@ -19,8 +21,13 @@
           🔥x{{ Theory.positive }}, 💀x{{ Theory.negative }}
           <br/>
           <br/>
-
-          <b-button href="#" variant="primary">Go somewhere</b-button>
+          <button type="button"
+                  class="btn btn-warning btn-sm"
+                  v-b-modal.Theory-update-modal
+                  @click="editTheory(Theory)">Update</button>
+          <button type="button"
+                  class="btn btn-danger btn-sm"
+                  @click="onDeleteTheory(Theory)">Delete</button>
         </b-card>
       </b-card-group>
     </div>
@@ -30,6 +37,7 @@
 <script>
 import axios from 'axios';
 import AddTheory from './AddTheory';
+import EditTheory from './EditTheory';
 
 function genPosNeg(singleTheory) {
   let countPositives = 0;
@@ -49,6 +57,7 @@ export default {
   data() {
     return {
       storedTheories: [],
+      theory: [],
     };
   },
   methods: {
@@ -69,12 +78,35 @@ export default {
           console.error(error);
         });
     },
+    editTheory(Theory) {
+      this.theory = Theory;
+    },
+    removeTheory(TheoryID) {
+      const path = `http://localhost:5000/Theories/${TheoryID}`;
+      axios.delete(path)
+        .then(() => {
+          this.getTheories();
+          this.message = 'Theory removed!';
+          this.showMessage = true;
+        })
+        .catch((error) => {
+        // eslint-disable-next-line
+          console.error(error);
+          this.getTheories();
+        });
+    },
+    onDeleteTheory(Theory) {
+      this.removeTheory(Theory.id);
+    },
+
+
   },
   created() {
     this.getTheories();
   },
   components: {
     addTheory: AddTheory,
+    editTheory: EditTheory,
   },
 };
 </script>

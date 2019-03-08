@@ -28,7 +28,8 @@ def all_Theories():
         add_Theory(post_data.get('title'),
                  post_data.get('author'),
                  post_data.get('proposedTheory'),
-                 post_data.get('bets'))
+                 post_data.get('bets'),
+                 uuid.uuid1().hex)
         response_object['message'] = 'Theory added!'
     else:
         response_object['Theories'] = THEORIES
@@ -45,6 +46,7 @@ def all_players():
 def single_Theory(Theory_id):
     response_object = {'status': 'success'}
     if request.method == 'PUT':
+        #To update a record we delete it and add it again
         post_data = request.get_json()
         if(remove_Theory(Theory_id)):
             add_Theory(post_data.get('title'),
@@ -62,7 +64,7 @@ def single_Theory(Theory_id):
             response_object['status'] = 'Fail'
     return jsonify(response_object)
 
-def add_Theory(TheoryTitle, TheoryAuthor, theoryContent, TheoryBets, uniqueID = uuid.uuid4().hex):
+def add_Theory(TheoryTitle, TheoryAuthor, theoryContent, TheoryBets, uniqueID):
     global THEORIES
     THEORIES.append({
         'id': uniqueID,
