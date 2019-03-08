@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+        <button type="button"
+                class="btn btn-success btn-sm"
+                v-b-modal.Theory-modal>Add Theory</button>
+    <addTheory @theorySubmitted="getTheories"></addTheory>
     <div class="row">
       <b-card-group deck>
         <b-card v-for="(Theory, index) in storedTheories" :key="index"
@@ -25,6 +29,7 @@
 
 <script>
 import axios from 'axios';
+import AddTheory from './AddTheory';
 
 function genPosNeg(singleTheory) {
   let countPositives = 0;
@@ -67,6 +72,9 @@ export default {
   },
   created() {
     this.getTheories();
+  },
+  components: {
+    addTheory: AddTheory,
   },
 };
 </script>
