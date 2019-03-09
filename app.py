@@ -66,12 +66,15 @@ def single_Theory(Theory_id):
 
 def add_Theory(TheoryTitle, TheoryAuthor, theoryContent, TheoryBets, uniqueID):
     global THEORIES
+    betPos, betNeg = individualVoteCalc(TheoryBets)
     THEORIES.append({
         'id': uniqueID,
         'title': TheoryTitle,
         'author': TheoryAuthor,
         'proposedTheory': theoryContent,
-        'bets': TheoryBets
+        'bets': TheoryBets,
+        'positive': betPos,
+        'negative': betNeg
     })
     update_local()
 
@@ -114,6 +117,17 @@ def add_player(authorName, tokensTotal, bets, uniqueID = uuid.uuid4().hex):
         'bets': bets
     })
 
+def individualVoteCalc(voteBets):
+    countPos = 0
+    countNeg = 0
+    for bet in voteBets: 
+        if bet["betAmount"] > 0:
+            countPos += bet["betAmount"]
+        else:
+            countNeg += abs(bet["betAmount"])
+    return (countPos, countNeg)
+
+# JSON helpers
 def load_Theories():
     global THEORIES
     with open('Theories.json') as infile:

@@ -39,20 +39,7 @@ import axios from 'axios';
 import AddTheory from './AddTheory';
 import EditTheory from './EditTheory';
 
-function genPosNeg(singleTheory) {
-  let countPositives = 0;
-  let countNegatives = 0;
-  singleTheory.bets.forEach((element) => {
-    if (element.betAmount > 0) {
-      countPositives += element.betAmount;
-    } else {
-      countNegatives += Math.abs(element.betAmount);
-    }
-  });
-  return [countPositives, countNegatives];
-}
 /* Vue Architecture */
-
 export default {
   data() {
     return {
@@ -65,12 +52,6 @@ export default {
       const path = 'http://localhost:5000/Theories';
       axios.get(path)
         .then((res) => {
-          /* eslint no-param-reassign: "error" */
-          res.data.Theories.forEach((element) => {
-            const temp = genPosNeg(element);
-            element.positive = temp[0];
-            element.negative = temp[1];
-          });
           this.storedTheories = res.data.Theories;
         })
         .catch((error) => {
