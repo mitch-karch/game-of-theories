@@ -37,21 +37,7 @@
         <b-form-group id="form-edit-votes-group"
                       label="Votes:"
                       label-for="form-edit-votes-input">
-            <div v-for="voter in passedTheory.bets" :key="voter.player">
-                {{voter.player}} assigned tokens: {{ voter.betAmount }} {{
-                voter.betAmount > 0
-                ? "🔥".repeat(voter.betAmount) : "💀".repeat(Math.abs(voter.betAmount)) }}
-                <b-form-input :name="voter.name"
-                              :key="voter.name"
-                              id="form-votes-input"
-                              type="range"
-                              placeholder=0
-                              min=-5
-                              max=5
-                              step=1
-                              v-model.number="voter.betAmount">
-                </b-form-input>
-            </div>
+          <votingSlides v-bind:players="passedTheory.bets"></votingSlides>
         </b-form-group>
         <b-button type="submit" variant="primary">Update</b-button>
         <b-button type="reset" variant="danger">Cancel</b-button>
@@ -62,6 +48,7 @@
 
 <script>
 import axios from 'axios';
+import VotingSlides from './VotingSlides';
 
 function genAuthorList(playerObject) {
   const tempAuthorList = [];
@@ -126,6 +113,8 @@ export default{
   created() {
     this.getPlayers();
   },
-
+  components: {
+    votingSlides: VotingSlides,
+  },
 };
 </script>

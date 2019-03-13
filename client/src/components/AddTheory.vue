@@ -40,21 +40,7 @@
         <b-form-group id="form-votes-group"
                       label="Votes:"
                       label-for="form-votes-input">
-          <div v-for="voter in addTheoryForm.players" :key="voter.name">
-              {{voter.name}} assigned tokens: {{ voter.tempToken }} {{
-              voter.tempToken > 0
-              ? "🔥".repeat(voter.tempToken) : "💀".repeat(Math.abs(voter.tempToken)) }}
-              <b-form-input :name="voter.name"
-                            :key="voter.name"
-                            id="form-votes-input"
-                            type="range"
-                            placeholder=0
-                            min=-5
-                            max=5
-                            step=1
-                            v-model.number="voter.tempToken">
-              </b-form-input>
-          </div>
+          <votingSlides v-bind:players="addTheoryForm.players"></votingSlides>
         </b-form-group>
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
@@ -65,6 +51,7 @@
 
 <script>
 import axios from 'axios';
+import VotingSlides from './VotingSlides';
 
 function genAuthorList(playerObject) {
   const tempAuthorList = [];
@@ -122,9 +109,9 @@ export default{
         proposedTheory: this.addTheoryForm.proposedTheory,
       };
       this.addTheoryForm.players.forEach((element) => {
-        const player = element.name;
-        const betAmount = element.tempToken;
-        this.tempBetList.push({ player, betAmount });
+        const name = element.name;
+        const betAmount = element.betAmount;
+        this.tempBetList.push({ name, betAmount });
       });
       payload.bets = this.tempBetList;
       this.tempBetList = [];
@@ -146,6 +133,8 @@ export default{
     this.getPlayers();
     this.initForm();
   },
-
+  components: {
+    votingSlides: VotingSlides,
+  },
 };
 </script>
